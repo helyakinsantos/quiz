@@ -1552,25 +1552,35 @@ function SalesVslPlayer({
   };
 
   /**
-   * Curva psicológica de retenção: avança 3x mais rápido no começo e estabiliza em 1x
+   * Curva psicológica de retenção: avança muito rápido no começo e desacelera
+   * suavemente no final, criando tensão de "quase chegando".
+   *
+   * Fase 1 (0–40% do vídeo): corre até ~75% da barra (ease-out forte)
+   * Fase 2 (40–80% do vídeo): desacelera de 75% → 92% (ease-out suave)
+   * Fase 3 (80–100% do vídeo): arrasta de 92% → 100% (quase parado)
    */
   const getDynamicProgress = (current: number, total: number) => {
     if (!total || total <= 0 || current <= 0) return 2.5;
     const ratio = Math.min(1, Math.max(0, current / total));
     if (ratio >= 0.998) return 100;
 
-    const threshold = 0.8;
     let percent: number;
 
-    if (ratio < threshold) {
-      const u = ratio / threshold;
-      const a = 160;
-      const b = -320;
-      const c = 240;
-      const g = a * Math.pow(u, 3) + b * Math.pow(u, 2) + c * u;
-      percent = Math.max(2.5, g);
+    if (ratio < 0.4) {
+      // Fase 1: Rápida — ease-out cúbico de 2.5% a 75%
+      const t = ratio / 0.4;
+      const eased = 1 - Math.pow(1 - t, 3);
+      percent = 2.5 + eased * 72.5;
+    } else if (ratio < 0.8) {
+      // Fase 2: Desacelera — ease-out quadrático de 75% a 92%
+      const t = (ratio - 0.4) / 0.4;
+      const eased = 1 - Math.pow(1 - t, 2);
+      percent = 75 + eased * 17;
     } else {
-      percent = ratio * 100;
+      // Fase 3: Muito lenta — ease-out quártico de 92% a 100%
+      const t = (ratio - 0.8) / 0.2;
+      const eased = 1 - Math.pow(1 - t, 4);
+      percent = 92 + eased * 8;
     }
 
     return Math.min(100, Math.max(2.5, Number.parseFloat(percent.toFixed(2))));
