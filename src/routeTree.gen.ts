@@ -9,12 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VslRouteImport } from './routes/vsl'
+import { Route as UpsellRouteImport } from './routes/upsell'
+import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as OfertaEspecialRouteImport } from './routes/oferta-especial'
+import { Route as AppCoachlucaRouteImport } from './routes/app-coachluca'
 import { Route as IndexRouteImport } from './routes/index'
 
+const VslRoute = VslRouteImport.update({
+  id: '/vsl',
+  path: '/vsl',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpsellRoute = UpsellRouteImport.update({
+  id: '/upsell',
+  path: '/upsell',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizRoute = QuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OfertaEspecialRoute = OfertaEspecialRouteImport.update({
   id: '/oferta-especial',
   path: '/oferta-especial',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppCoachlucaRoute = AppCoachlucaRouteImport.update({
+  id: '/app-coachluca',
+  path: '/app-coachluca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +49,94 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app-coachluca': typeof AppCoachlucaRoute
   '/oferta-especial': typeof OfertaEspecialRoute
+  '/quiz': typeof QuizRoute
+  '/upsell': typeof UpsellRoute
+  '/vsl': typeof VslRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app-coachluca': typeof AppCoachlucaRoute
   '/oferta-especial': typeof OfertaEspecialRoute
+  '/quiz': typeof QuizRoute
+  '/upsell': typeof UpsellRoute
+  '/vsl': typeof VslRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app-coachluca': typeof AppCoachlucaRoute
   '/oferta-especial': typeof OfertaEspecialRoute
+  '/quiz': typeof QuizRoute
+  '/upsell': typeof UpsellRoute
+  '/vsl': typeof VslRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/oferta-especial'
+  fullPaths:
+    | '/'
+    | '/app-coachluca'
+    | '/oferta-especial'
+    | '/quiz'
+    | '/upsell'
+    | '/vsl'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/oferta-especial'
-  id: '__root__' | '/' | '/oferta-especial'
+  to: '/' | '/app-coachluca' | '/oferta-especial' | '/quiz' | '/upsell' | '/vsl'
+  id:
+    | '__root__'
+    | '/'
+    | '/app-coachluca'
+    | '/oferta-especial'
+    | '/quiz'
+    | '/upsell'
+    | '/vsl'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppCoachlucaRoute: typeof AppCoachlucaRoute
   OfertaEspecialRoute: typeof OfertaEspecialRoute
+  QuizRoute: typeof QuizRoute
+  UpsellRoute: typeof UpsellRoute
+  VslRoute: typeof VslRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vsl': {
+      id: '/vsl'
+      path: '/vsl'
+      fullPath: '/vsl'
+      preLoaderRoute: typeof VslRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/upsell': {
+      id: '/upsell'
+      path: '/upsell'
+      fullPath: '/upsell'
+      preLoaderRoute: typeof UpsellRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/oferta-especial': {
       id: '/oferta-especial'
       path: '/oferta-especial'
       fullPath: '/oferta-especial'
       preLoaderRoute: typeof OfertaEspecialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app-coachluca': {
+      id: '/app-coachluca'
+      path: '/app-coachluca'
+      fullPath: '/app-coachluca'
+      preLoaderRoute: typeof AppCoachlucaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +151,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppCoachlucaRoute: AppCoachlucaRoute,
   OfertaEspecialRoute: OfertaEspecialRoute,
+  QuizRoute: QuizRoute,
+  UpsellRoute: UpsellRoute,
+  VslRoute: VslRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

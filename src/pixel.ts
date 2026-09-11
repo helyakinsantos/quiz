@@ -1,8 +1,18 @@
-export const META_PIXEL_ID = "3172223002972659";
-export const BASE_CHECKOUT_URL = "https://pay.hotmart.com/S107338787U?bid=1788973203703";
-export const BASE_CHECKOUT_BASIC_URL = "https://pay.hotmart.com/S107338787U?bid=1788973203703";
-export const BASE_CHECKOUT_VIP_URL = "https://pay.hotmart.com/S107338787U?off=4g14fspt";
-export const BASE_BACKREDIRECT_URL = "https://pay.hotmart.com/S107338787U?off=ww74ql3x";
+export const META_PIXEL_ID = "934487626380742";
+export const BASE_CHECKOUT_URL = "https://pay.hotmart.com/A107329934V";
+export const BASE_CHECKOUT_BASIC_URL = "https://pay.hotmart.com/A107329934V";
+export const BASE_CHECKOUT_VIP_URL = "https://pay.hotmart.com/A107329934V";
+export const BASE_BACKREDIRECT_URL = "https://pay.hotmart.com/A107329934V?off=z9xm1wqz";
+
+/**
+ * Retorna true se a rota atual for do App entregável (/app-coachluca ou /app),
+ * garantindo que o Pixel NUNCA seja metrificado nessa página.
+ */
+export function isAppRoute(): boolean {
+  if (typeof window === "undefined") return false;
+  const path = window.location.pathname.toLowerCase();
+  return path.startsWith("/app-coachluca") || path.startsWith("/app");
+}
 
 type MetaPixelFn = {
   (...args: unknown[]): void;
@@ -22,9 +32,10 @@ declare global {
 
 /**
  * Safe execution helper for Meta Pixel (window.fbq)
+ * Bloqueado automaticamente no App entregável (/app-coachluca)
  */
 export function fbq(...args: unknown[]) {
-  if (typeof window === "undefined" || !META_PIXEL_ID) return;
+  if (typeof window === "undefined" || !META_PIXEL_ID || isAppRoute()) return;
   if (window.fbq) {
     try {
       window.fbq(...args);
@@ -35,10 +46,11 @@ export function fbq(...args: unknown[]) {
 }
 
 /**
- * Initializes Meta Pixel in the browser if not already loaded
+ * Initializes Meta Pixel in the browser if not already loaded.
+ * Ignorado completamente se estiver na rota do App (/app-coachluca).
  */
 export function initMetaPixel() {
-  if (typeof window === "undefined" || !META_PIXEL_ID) return;
+  if (typeof window === "undefined" || !META_PIXEL_ID || isAppRoute()) return;
 
   if (!window.fbq) {
     const n: MetaPixelFn = function (...args: unknown[]) {
@@ -75,6 +87,7 @@ export function initMetaPixel() {
  * Track generic PageView with custom page name
  */
 export function trackPageView(pageName?: string) {
+  if (isAppRoute()) return;
   fbq("track", "PageView", {
     page_name: pageName || (typeof document !== "undefined" ? document.title : "Quiz"),
     url: typeof window !== "undefined" ? window.location.href : "",
@@ -85,6 +98,7 @@ export function trackPageView(pageName?: string) {
  * Track ViewContent for funnel screens
  */
 export function trackViewContent(screenName: string, extraParams: Record<string, unknown> = {}) {
+  if (isAppRoute()) return;
   fbq("track", "ViewContent", {
     content_name: screenName,
     content_category: "Quiz Funnel 28 Dias",
