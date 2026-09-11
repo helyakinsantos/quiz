@@ -1,8 +1,8 @@
-export const META_PIXEL_ID = "934487626380742";
-export const BASE_CHECKOUT_URL = "https://pay.hotmart.com/A107329934V";
-export const BASE_CHECKOUT_BASIC_URL = "https://pay.hotmart.com/A107329934V";
-export const BASE_CHECKOUT_VIP_URL = "https://pay.hotmart.com/A107329934V";
-export const BASE_BACKREDIRECT_URL = "https://pay.hotmart.com/A107329934V?off=z9xm1wqz";
+export const META_PIXEL_ID = "3238260863051423";
+export const BASE_CHECKOUT_URL = "https://go.centerpag.com/PPU38CQFMGD";
+export const BASE_CHECKOUT_BASIC_URL = "https://go.centerpag.com/PPU38CQFMGD";
+export const BASE_CHECKOUT_VIP_URL = "https://go.centerpag.com/PPU38CQFMGD";
+export const BASE_BACKREDIRECT_URL = "https://go.centerpag.com/PPU38CQFMGF";
 
 /**
  * Retorna true se a rota atual for do App entregável (/app-coachluca ou /app),
