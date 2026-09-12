@@ -1,7 +1,7 @@
 export const META_PIXEL_ID = "3238260863051423";
-export const BASE_CHECKOUT_URL = "https://go.centerpag.com/PPU38CQFMGD";
-export const BASE_CHECKOUT_BASIC_URL = "https://go.centerpag.com/PPU38CQFMGD";
-export const BASE_CHECKOUT_VIP_URL = "https://go.centerpag.com/PPU38CQFMGD";
+export const BASE_CHECKOUT_URL = "https://pay.hotmart.com/A107329934V?checkoutMode=10";
+export const BASE_CHECKOUT_BASIC_URL = "https://pay.hotmart.com/A107329934V?checkoutMode=10";
+export const BASE_CHECKOUT_VIP_URL = "https://pay.hotmart.com/A107329934V?checkoutMode=10";
 export const BASE_BACKREDIRECT_URL = "https://go.centerpag.com/PPU38CQFMGF";
 
 /**
@@ -263,7 +263,7 @@ export function getDecoratedCheckoutUrl(baseUrl = BASE_CHECKOUT_URL): string {
     currentParams.forEach((value, key) => {
       if (value) {
         // Protect Hotmart offer configuration from baseUrl
-        if ((key === "off" || key === "bid") && url.searchParams.has(key)) {
+        if ((key === "off" || key === "bid" || key === "checkoutMode") && url.searchParams.has(key)) {
           return;
         }
         url.searchParams.set(key, value);

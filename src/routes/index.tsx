@@ -633,17 +633,15 @@ export function Index() {
     }
 
     const handlePopState = () => {
-      trackBackredirectView();
-      const backredirectUrl = getDecoratedCheckoutUrl(BASE_BACKREDIRECT_URL);
-      window.location.href = backredirectUrl;
+      const search = window.location.search || "";
+      window.location.href = `/backredirect${search}`;
     };
 
     // Exit Intent Desktop: Cursor saindo pelo topo da janela na tela da oferta ou VSL
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 15 && (screen.kind === "final" || screen.kind === "vsl")) {
-        trackBackredirectView();
-        const backredirectUrl = getDecoratedCheckoutUrl(BASE_BACKREDIRECT_URL);
-        window.location.href = backredirectUrl;
+        const search = window.location.search || "";
+        window.location.href = `/backredirect${search}`;
       }
     };
 
@@ -2902,15 +2900,35 @@ function VslQuizPlayer({
   };
 
   /**
-   * Fast & engaging psychological progress bar:
-   * Starts faster to capture initial attention, smooth continuous fill
+   * Curva psicológica de retenção da VSL:
+   * Anda de pressa no início, alcançando cerca de 65% rapidamente
+   * e, ao chegar em 65%, vai desacelerando progressivamente até o fim.
    */
   const getPsychologicalProgress = (current: number, total: number) => {
-    if (!total || total <= 0 || current <= 0) return 5;
+    if (!total || total <= 0 || current <= 0) return 3.5;
     const ratio = Math.min(1, Math.max(0, current / total));
     if (ratio >= 0.995) return 100;
-    const curved = (1 - Math.pow(1 - ratio, 1.65)) * 100;
-    return Math.min(99, Math.max(6, Math.round(curved)));
+
+    let percent: number;
+
+    if (ratio < 0.20) {
+      // Fase 1: Rápida — acelera depressa até atingir 65% em 20% do vídeo
+      const t = ratio / 0.20;
+      const eased = 1 - Math.pow(1 - t, 2.2);
+      percent = 3.5 + eased * (65 - 3.5);
+    } else if (ratio < 0.70) {
+      // Fase 2: Desacelera a partir dos 65% — avança suavemente de 65% até 87%
+      const t = (ratio - 0.20) / 0.50;
+      const eased = 1 - Math.pow(1 - t, 2.0);
+      percent = 65 + eased * (87 - 65);
+    } else {
+      // Fase 3: Retenção final — avanço lento de 87% até 98.5%
+      const t = (ratio - 0.70) / 0.295;
+      const eased = 1 - Math.pow(1 - t, 3.0);
+      percent = 87 + eased * (98.5 - 87);
+    }
+
+    return Math.min(100, Math.max(3.5, Number.parseFloat(percent.toFixed(2))));
   };
 
   const progressPercent = getPsychologicalProgress(currentTime, duration);
@@ -2990,14 +3008,10 @@ function VslQuizPlayer({
           }`}
         >
           {/* Psychological Continuous Progress Line (No numbers) */}
-          <div
-            className="relative mb-3 h-2 w-full rounded-full bg-white/20 overflow-hidden"
-            aria-hidden="true"
-          >
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-[color:var(--coral)] via-[#ff2fb3] to-[color:var(--lime)] transition-[width] duration-300 ease-out"
-              style={{ width: `${progressPercent}%` }}
-            />
+          <div className="vsl-progress-track relative mb-3 overflow-hidden" aria-hidden="true">
+            <div className="vsl-progress-fill" style={{ width: `${progressPercent}%` }}>
+              <div className="vsl-progress-glow-tip" />
+            </div>
           </div>
 
           {/* Minimal Controls row */}

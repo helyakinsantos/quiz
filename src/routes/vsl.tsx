@@ -152,9 +152,8 @@ export default function VslSalesPage() {
     }
 
     const handlePopState = () => {
-      trackBackredirectView();
-      const backredirectUrl = getDecoratedCheckoutUrl(BASE_BACKREDIRECT_URL);
-      window.location.href = backredirectUrl;
+      const search = window.location.search || "";
+      window.location.href = `/backredirect${search}`;
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -1552,38 +1551,40 @@ function SalesVslPlayer({
   };
 
   /**
-   * Curva psicológica de retenção: avança muito rápido no começo e desacelera
-   * suavemente no final, criando tensão de "quase chegando".
+   * Curva psicológica de retenção da VSL:
+   * Anda de pressa no início, alcançando cerca de 65% rapidamente
+   * e, ao chegar em 65%, vai desacelerando progressivamente até o fim.
    *
-   * Fase 1 (0–40% do vídeo): corre até ~75% da barra (ease-out forte)
-   * Fase 2 (40–80% do vídeo): desacelera de 75% → 92% (ease-out suave)
-   * Fase 3 (80–100% do vídeo): arrasta de 92% → 100% (quase parado)
+   * Fase 1 (0–20% do vídeo): corre de ~3.5% até 65% da barra (alta velocidade)
+   * Fase 2 (20–70% do vídeo): a partir de 65%, desacelera gradualmente de 65% → 87%
+   * Fase 3 (70–99.5% do vídeo): retenção máxima, avanço lento de 87% → 98.5%
+   * Fase 4 (>= 99.5% do vídeo): 100% completo
    */
   const getDynamicProgress = (current: number, total: number) => {
-    if (!total || total <= 0 || current <= 0) return 2.5;
+    if (!total || total <= 0 || current <= 0) return 3.5;
     const ratio = Math.min(1, Math.max(0, current / total));
-    if (ratio >= 0.998) return 100;
+    if (ratio >= 0.995) return 100;
 
     let percent: number;
 
-    if (ratio < 0.4) {
-      // Fase 1: Rápida — ease-out cúbico de 2.5% a 75%
-      const t = ratio / 0.4;
-      const eased = 1 - Math.pow(1 - t, 3);
-      percent = 2.5 + eased * 72.5;
-    } else if (ratio < 0.8) {
-      // Fase 2: Desacelera — ease-out quadrático de 75% a 92%
-      const t = (ratio - 0.4) / 0.4;
-      const eased = 1 - Math.pow(1 - t, 2);
-      percent = 75 + eased * 17;
+    if (ratio < 0.20) {
+      // Fase 1: Rápida — acelera depressa até atingir 65% em 20% do vídeo
+      const t = ratio / 0.20;
+      const eased = 1 - Math.pow(1 - t, 2.2);
+      percent = 3.5 + eased * (65 - 3.5);
+    } else if (ratio < 0.70) {
+      // Fase 2: Desacelera a partir dos 65% — avança suavemente de 65% até 87%
+      const t = (ratio - 0.20) / 0.50;
+      const eased = 1 - Math.pow(1 - t, 2.0);
+      percent = 65 + eased * (87 - 65);
     } else {
-      // Fase 3: Muito lenta — ease-out quártico de 92% a 100%
-      const t = (ratio - 0.8) / 0.2;
-      const eased = 1 - Math.pow(1 - t, 4);
-      percent = 92 + eased * 8;
+      // Fase 3: Retenção final — avanço lento de 87% até 98.5%
+      const t = (ratio - 0.70) / 0.295;
+      const eased = 1 - Math.pow(1 - t, 3.0);
+      percent = 87 + eased * (98.5 - 87);
     }
 
-    return Math.min(100, Math.max(2.5, Number.parseFloat(percent.toFixed(2))));
+    return Math.min(100, Math.max(3.5, Number.parseFloat(percent.toFixed(2))));
   };
 
   const progressPercent = getDynamicProgress(currentTime, duration);
