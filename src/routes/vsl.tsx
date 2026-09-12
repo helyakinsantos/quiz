@@ -169,7 +169,14 @@ export default function VslSalesPage() {
     trackPlanSelection(plan, plan === "vip" ? 19.99 : 9.99);
   };
 
-  const handleCheckout = (plan: "vip" | "basic", location: string) => {
+  const handleCheckout = (
+    plan: "vip" | "basic",
+    location: string,
+    e?: React.MouseEvent
+  ) => {
+    if (e) {
+      e.preventDefault();
+    }
     playClickSound();
     const price = plan === "vip" ? 19.99 : 9.99;
     trackPlanCheckoutClick(plan, price, location);
@@ -427,17 +434,17 @@ export default function VslSalesPage() {
                   </div>
 
                   <div className="pt-6">
-                    <button
-                      type="button"
-                      onClick={() => handleCheckout("basic", "sales_page_basic_card")}
-                      className="cta-button w-full py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-md hover:scale-[1.01] bg-[color:var(--wine)]"
+                    <a
+                      href={getDecoratedCheckoutUrl(BASE_CHECKOUT_BASIC_URL)}
+                      onClick={(e) => handleCheckout("basic", "sales_page_basic_card", e)}
+                      className="cta-button block text-center w-full py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-md hover:scale-[1.01] bg-[color:var(--wine)] cursor-pointer"
                     >
                       <span className="button-sheen" />
                       <span className="flex items-center justify-center gap-1.5">
                         ELEGIR PLAN BÁSICO (9,99 €)
                         <ArrowRight size={16} />
                       </span>
-                    </button>
+                    </a>
                     <p className="mt-2 text-center text-[10px] text-[color:var(--ink-muted)] font-medium">
                       Acceso instantáneo • 100% Cifrado
                     </p>
@@ -574,17 +581,17 @@ export default function VslSalesPage() {
                   </div>
 
                   <div className="pt-6">
-                    <button
-                      type="button"
-                      onClick={() => handleCheckout("vip", "sales_page_vip_card")}
-                      className="cta-button w-full py-4 text-sm sm:text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)]"
+                    <a
+                      href={getDecoratedCheckoutUrl(BASE_CHECKOUT_VIP_URL)}
+                      onClick={(e) => handleCheckout("vip", "sales_page_vip_card", e)}
+                      className="cta-button block text-center w-full py-4 text-sm sm:text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)] cursor-pointer"
                     >
                       <span className="button-sheen" />
                       <span className="flex items-center justify-center gap-2">
                         ¡SÍ! QUIERO EL PLAN VIP COMPLETO (19,99 €)
                         <ArrowRight size={22} />
                       </span>
-                    </button>
+                    </a>
 
                     <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-center text-[11px] font-semibold text-[color:var(--ink-muted)]">
                       <span className="flex items-center gap-1">
@@ -1249,21 +1256,21 @@ export default function VslSalesPage() {
               </p>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("vip", "sales_page_guarantee_vip_btn")}
-                  className="cta-button py-3.5 px-6 text-xs sm:text-sm font-black uppercase text-white shadow-md hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] to-[color:var(--wine)]"
+                <a
+                  href={getDecoratedCheckoutUrl(BASE_CHECKOUT_VIP_URL)}
+                  onClick={(e) => handleCheckout("vip", "sales_page_guarantee_vip_btn", e)}
+                  className="cta-button inline-block text-center py-3.5 px-6 text-xs sm:text-sm font-black uppercase text-white shadow-md hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] to-[color:var(--wine)] cursor-pointer"
                 >
                   <span className="button-sheen" />
                   <span>PROBAR EL PLAN VIP SIN RIESGO (19,99 €)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("basic", "sales_page_guarantee_basic_btn")}
-                  className="rounded-2xl border-2 border-emerald-800 bg-white px-5 py-3 text-xs sm:text-sm font-black text-emerald-900 hover:bg-emerald-100 transition-colors"
+                </a>
+                <a
+                  href={getDecoratedCheckoutUrl(BASE_CHECKOUT_BASIC_URL)}
+                  onClick={(e) => handleCheckout("basic", "sales_page_guarantee_basic_btn", e)}
+                  className="rounded-2xl border-2 border-emerald-800 bg-white px-5 py-3 text-xs sm:text-sm font-black text-emerald-900 hover:bg-emerald-100 transition-colors text-center cursor-pointer"
                 >
                   Probar el Plan Básico (9,99 €)
-                </button>
+                </a>
               </div>
             </section>
 
@@ -1295,25 +1302,25 @@ export default function VslSalesPage() {
               </p>
 
               <div className="mx-auto flex max-w-md flex-col gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("vip", "sales_page_bottom_vip_cta")}
-                  className="cta-button py-4 text-sm sm:text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)]"
+                <a
+                  href={getDecoratedCheckoutUrl(BASE_CHECKOUT_VIP_URL)}
+                  onClick={(e) => handleCheckout("vip", "sales_page_bottom_vip_cta", e)}
+                  className="cta-button block text-center py-4 text-sm sm:text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)] cursor-pointer"
                 >
                   <span className="button-sheen" />
                   <span className="flex items-center justify-center gap-2">
                     ¡QUIERO EL PLAN VIP COMPLETO POR 19,99 €!
                     <ArrowRight size={20} />
                   </span>
-                </button>
+                </a>
 
-                <button
-                  type="button"
-                  onClick={() => handleCheckout("basic", "sales_page_bottom_basic_cta")}
-                  className="rounded-2xl border-2 border-[color:var(--wine)] bg-white py-3 text-xs sm:text-sm font-bold text-[color:var(--wine)] hover:bg-black/5 transition-colors"
+                <a
+                  href={getDecoratedCheckoutUrl(BASE_CHECKOUT_BASIC_URL)}
+                  onClick={(e) => handleCheckout("basic", "sales_page_bottom_basic_cta", e)}
+                  className="rounded-2xl border-2 border-[color:var(--wine)] bg-white py-3 text-xs sm:text-sm font-bold text-[color:var(--wine)] hover:bg-black/5 transition-colors text-center cursor-pointer"
                 >
                   Prefiero el Plan Básico de 9,99 €
-                </button>
+                </a>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[color:var(--ink-muted)] pt-2">
@@ -1348,22 +1355,25 @@ export default function VslSalesPage() {
             </div>
 
             <div className="flex items-center gap-2 flex-1 sm:flex-initial justify-end">
-              <button
-                type="button"
-                onClick={() =>
+              <a
+                href={getDecoratedCheckoutUrl(
+                  selectedPlan === "vip" ? BASE_CHECKOUT_VIP_URL : BASE_CHECKOUT_BASIC_URL
+                )}
+                onClick={(e) =>
                   handleCheckout(
                     selectedPlan,
-                    `sales_page_floating_sticky_${selectedPlan}`
+                    `sales_page_floating_sticky_${selectedPlan}`,
+                    e
                   )
                 }
-                className="cta-button min-h-[3rem] py-2 px-5 text-xs sm:text-sm font-black uppercase text-white shadow-md flex-1 sm:flex-initial"
+                className="cta-button inline-flex items-center justify-center min-h-[3rem] py-2 px-5 text-xs sm:text-sm font-black uppercase text-white shadow-md flex-1 sm:flex-initial cursor-pointer"
               >
                 <span className="button-sheen" />
                 <span className="flex items-center justify-center gap-1.5">
                   ¡ACCEDER POR {selectedPlan === "vip" ? "19,99 €" : "9,99 €"}!
                   <ArrowRight size={16} />
                 </span>
-              </button>
+              </a>
             </div>
           </div>
         </div>

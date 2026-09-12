@@ -2684,17 +2684,20 @@ function FinalScreen({
           </p>
 
           <div className="mx-auto mt-6 max-w-lg">
-            <button
-              type="button"
-              onClick={() => handleCtaClick("quiz_secondary_cta")}
-              className="cta-button text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02]"
+            <a
+              href={getDecoratedCheckoutUrl(BASE_CHECKOUT_URL)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleCtaClick("quiz_secondary_cta");
+              }}
+              className="cta-button block text-center text-base font-black tracking-wider text-white shadow-xl hover:scale-[1.02] cursor-pointer"
             >
               <span className="button-sheen" />
               <span className="flex items-center justify-center gap-2">
                 ¡QUIERO MI PLAN COMPLETO POR $9.90!
                 <ArrowRight size={20} />
               </span>
-            </button>
+            </a>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[color:var(--ink-muted)]">
@@ -2725,17 +2728,20 @@ function FinalScreen({
                 <span className="text-[color:var(--shock-yellow)]">$9.90 USD</span>
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => handleCtaClick("quiz_floating_cta")}
-              className="cta-button min-h-[3.2rem] py-2 px-5 text-xs sm:text-sm font-black uppercase text-white shadow-md flex-1 sm:flex-initial"
+            <a
+              href={getDecoratedCheckoutUrl(BASE_CHECKOUT_URL)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleCtaClick("quiz_floating_cta");
+              }}
+              className="cta-button inline-flex items-center justify-center min-h-[3.2rem] py-2 px-5 text-xs sm:text-sm font-black uppercase text-white shadow-md flex-1 sm:flex-initial cursor-pointer"
             >
               <span className="button-sheen" />
               <span className="flex items-center justify-center gap-1.5">
                 ¡ACCEDER POR SOLO $9.90!
                 <ArrowRight size={16} />
               </span>
-            </button>
+            </a>
           </div>
         </div>
       )}
@@ -3200,17 +3206,20 @@ function VslQuizOfferCard({ onCtaClick }: Readonly<{ onCtaClick: (location: stri
           </div>
 
           {/* Big CTA */}
-          <button
-            type="button"
-            onClick={() => onCtaClick("quiz_offer_primary_cta")}
-            className="cta-button text-base md:text-lg font-black tracking-wider text-white shadow-xl hover:scale-[1.02]"
+          <a
+            href={getDecoratedCheckoutUrl(BASE_CHECKOUT_URL)}
+            onClick={(e) => {
+              e.preventDefault();
+              onCtaClick("quiz_offer_primary_cta");
+            }}
+            className="cta-button block text-center text-base md:text-lg font-black tracking-wider text-white shadow-xl hover:scale-[1.02] cursor-pointer"
           >
             <span className="button-sheen" />
             <span className="flex items-center justify-center gap-2">
               ¡QUIERO ACCESO POR SOLO $9.90 USD!
               <ArrowRight size={22} />
             </span>
-          </button>
+          </a>
 
           <div className="flex flex-wrap items-center justify-center gap-4 text-center text-[11px] font-semibold text-[color:var(--ink-muted)]">
             <span className="flex items-center gap-1">
@@ -3791,14 +3800,17 @@ function VslQuizGuarantee({ onCtaClick }: Readonly<{ onCtaClick: () => void }>) 
       </p>
 
       <div className="mt-5">
-        <button
-          type="button"
-          onClick={onCtaClick}
-          className="cta-button max-w-md mx-auto text-sm font-black uppercase text-white shadow-md hover:scale-[1.02]"
+        <a
+          href={getDecoratedCheckoutUrl(BASE_CHECKOUT_URL)}
+          onClick={(e) => {
+            e.preventDefault();
+            onCtaClick();
+          }}
+          className="cta-button block max-w-md mx-auto text-center text-sm font-black uppercase text-white shadow-md hover:scale-[1.02] cursor-pointer"
         >
           <span className="button-sheen" />
           <span>PROBAR EL MÉTODO SIN RIESGO POR $9.90</span>
-        </button>
+        </a>
       </div>
     </section>
   );
