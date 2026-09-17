@@ -2596,7 +2596,9 @@ function FinalScreen({
   const handleCtaClick = (location: string) => {
     trackVslCtaClick(location);
     const checkoutUrl = getDecoratedCheckoutUrl(BASE_CHECKOUT_URL);
-    window.location.href = checkoutUrl;
+    if (checkoutUrl && checkoutUrl !== "#") {
+      window.location.href = checkoutUrl;
+    }
   };
 
   return (

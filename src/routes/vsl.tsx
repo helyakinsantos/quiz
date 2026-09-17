@@ -185,7 +185,9 @@ export default function VslSalesPage() {
     const targetUrl =
       plan === "vip" ? BASE_CHECKOUT_VIP_URL : BASE_CHECKOUT_BASIC_URL;
     const checkoutUrl = getDecoratedCheckoutUrl(targetUrl);
-    window.location.href = checkoutUrl;
+    if (checkoutUrl && checkoutUrl !== "#") {
+      window.location.href = checkoutUrl;
+    }
   };
 
   return (

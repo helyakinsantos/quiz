@@ -115,14 +115,18 @@ export default function OfertaEspecialPage() {
   const handlePrimaryCta = (location = "backredirect_hero_cta") => {
     trackBackredirectCtaClick(location);
     const checkoutUrl = getDecoratedCheckoutUrl(BASE_BACKREDIRECT_URL);
-    window.location.href = checkoutUrl;
+    if (checkoutUrl && checkoutUrl !== "#") {
+      window.location.href = checkoutUrl;
+    }
   };
 
   // Downsell CTA click ($5.90 Offer)
   const handleDownsellCta = (location = "downsell_modal_cta") => {
     trackDownsellCtaClick(location);
     const checkoutUrl = getDecoratedCheckoutUrl(BASE_BACKREDIRECT_URL);
-    window.location.href = checkoutUrl;
+    if (checkoutUrl && checkoutUrl !== "#") {
+      window.location.href = checkoutUrl;
+    }
   };
 
   const handleCloseDownsellModal = () => {
