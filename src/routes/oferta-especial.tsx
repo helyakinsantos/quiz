@@ -995,10 +995,10 @@ export default function OfertaEspecialPage() {
 
               <div className="mt-2 flex items-center justify-center gap-2">
                 <span className="text-xs sm:text-sm font-bold text-gray-400 line-through">
-                  Precio Normal: 97,00 €
+                  Precio Normal: $97.00 USD
                 </span>
                 <span className="text-xs sm:text-sm font-bold text-gray-400 line-through">
-                  Oferta 9,99 €
+                  Oferta $9.90 USD
                 </span>
               </div>
 
@@ -1007,7 +1007,7 @@ export default function OfertaEspecialPage() {
                   Llévalo hoy por solo:
                 </span>
                 <span className="font-display text-4xl sm:text-5xl font-black text-red-600">
-                  5,99 €
+                  $5.90 USD
                 </span>
               </div>
 
@@ -1036,7 +1036,7 @@ export default function OfertaEspecialPage() {
               >
                 <span className="button-sheen" />
                 <span className="flex items-center justify-center gap-2">
-                  ¡SÍ, QUIERO MI PLAN POR SOLO 5,99 €!
+                  ¡SÍ, QUIERO MI PLAN POR SOLO $5.90 USD!
                   <ArrowRight size={22} />
                 </span>
               </button>
@@ -1082,7 +1082,7 @@ export default function OfertaEspecialPage() {
                     OFERTA DE RESCATE ACTIVA
                   </span>
                   <span className="rounded bg-[color:var(--wine)] px-1.5 py-0.2 text-[10px] font-black text-[color:var(--lime)]">
-                    5,99 €
+                    $5.90 USD
                   </span>
                 </div>
                 <p className="text-[11px] font-medium text-[color:var(--ink-muted)]">
@@ -1099,7 +1099,7 @@ export default function OfertaEspecialPage() {
               >
                 <span className="button-sheen" />
                 <span className="flex items-center justify-center gap-1.5">
-                  ¡ACCEDER POR 5,99 €!
+                  ¡ACCEDER POR $5.90 USD!
                   <ArrowRight size={16} />
                 </span>
               </button>

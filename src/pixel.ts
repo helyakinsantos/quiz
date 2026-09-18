@@ -1,10 +1,9 @@
 // Configurações Globais de Rastreamento e Checkout
-// Para ativar, insira o ID do seu Pixel e os links de checkout desejados.
-export const META_PIXEL_ID = "";
-export const BASE_CHECKOUT_URL = "";
-export const BASE_CHECKOUT_BASIC_URL = "";
-export const BASE_CHECKOUT_VIP_URL = "";
-export const BASE_BACKREDIRECT_URL = "";
+export const META_PIXEL_ID = "1636246821834919";
+export const BASE_CHECKOUT_URL = "https://go.centerpag.com/PPU38CQG8KS";
+export const BASE_CHECKOUT_BASIC_URL = "https://go.centerpag.com/PPU38CQG8KS";
+export const BASE_CHECKOUT_VIP_URL = "https://go.centerpag.com/PPU38CQG8KS";
+export const BASE_BACKREDIRECT_URL = "https://go.centerpag.com/PPU38CQG8KT";
 
 /**
  * Retorna true se a rota atual for do App entregável (/app-coachluca ou /app),
@@ -105,8 +104,8 @@ export function trackViewContent(screenName: string, extraParams: Record<string,
     content_name: screenName,
     content_category: "Quiz Funnel 28 Dias",
     content_type: "quiz_step",
-    value: 9.99,
-    currency: "EUR",
+    value: 9.90,
+    currency: "USD",
     ...extraParams,
   });
 }
@@ -196,6 +195,13 @@ export function trackCouponUnlocked() {
     discount: "90% OFF",
     status: "unlocked",
   });
+
+  fbq("track", "CustomizeProduct", {
+    content_name: "Cupón 90% OFF Desbloqueado",
+    content_category: "Quiz Reward",
+    value: 9.90,
+    currency: "USD",
+  });
 }
 
 /**
@@ -204,7 +210,7 @@ export function trackCouponUnlocked() {
 export function trackCouponContinueClick() {
   fbq("trackCustom", "CouponContinueClick", {
     coupon_code: "BUMBUM90",
-    destination: "vsl_final_screen",
+    destination: "sales_offer_plan",
   });
 }
 
@@ -221,32 +227,53 @@ export function trackQuizComplete(profileSummary: Record<string, unknown> = {}) 
   fbq("track", "Lead", {
     content_name: "BrazilianBooty - Quiz Completado",
     content_category: "Quiz Lead",
-    value: 9.99,
-    currency: "EUR",
+    value: 9.90,
+    currency: "USD",
     ...profileSummary,
   });
 }
 
 /**
- * Track InitiateCheckout when CTA button is clicked
+ * Track InitiateCheckout + AddToCart + AddPaymentInfo when CTA button is clicked
  */
 export function trackInitiateCheckout(
   clickLocation = "final_cta",
-  productValue = 9.99,
+  productValue = 9.90,
   couponCode = "BUMBUM90",
   extra: Record<string, unknown> = {},
 ) {
+  // 1. AddToCart para reforçar o funil no Pixel
+  fbq("track", "AddToCart", {
+    content_name: "BrazilianBooty - Desafío 28 Días",
+    content_category: "Programa Digital",
+    content_ids: ["BRAZILIANBOOTY28"],
+    content_type: "product",
+    value: productValue,
+    currency: "USD",
+    num_items: 1,
+  });
+
+  // 2. InitiateCheckout padrão para otimização de campanhas
   fbq("track", "InitiateCheckout", {
     content_name: "BrazilianBooty - Desafío 28 Días",
     content_category: "Programa Digital",
     content_ids: ["BRAZILIANBOOTY28"],
     content_type: "product",
     value: productValue,
-    currency: "EUR",
+    currency: "USD",
     num_items: 1,
     coupon: couponCode,
     click_location: clickLocation,
     ...extra,
+  });
+
+  // 3. AddPaymentInfo ao clicar para ir ao checkout externo
+  fbq("track", "AddPaymentInfo", {
+    content_name: "BrazilianBooty - Desafío 28 Días",
+    content_category: "Programa Digital",
+    content_ids: ["BRAZILIANBOOTY28"],
+    value: productValue,
+    currency: "USD",
   });
 }
 
@@ -343,12 +370,12 @@ export function trackVslSpeedChange(speed: number) {
  * Track CTA click on the VSL page
  */
 export function trackVslCtaClick(location = "vsl_primary_cta") {
-  trackInitiateCheckout(location, 9.99, "BUMBUM90");
+  trackInitiateCheckout(location, 9.90, "BUMBUM90");
   fbq("trackCustom", "VslCtaClick", {
     click_location: location,
     product: "BrazilianBooty - Desafío 28 Días",
-    value: 9.99,
-    currency: "EUR",
+    value: 9.90,
+    currency: "USD",
   });
 }
 
@@ -359,8 +386,8 @@ export function trackBackredirectView() {
   trackPageView("Backredirect - BrazilianBooty 28 Días");
   trackViewContent("Backredirect BrazilianBooty", {
     page_type: "backredirect",
-    value: 5.99,
-    currency: "EUR",
+    value: 5.90,
+    currency: "USD",
   });
   fbq("trackCustom", "BackredirectView", {
     timestamp: new Date().toISOString(),
@@ -368,15 +395,15 @@ export function trackBackredirectView() {
 }
 
 /**
- * Track CTA click on Backredirect page (5,99 € offer)
+ * Track CTA click on Backredirect page ($5.90 offer)
  */
 export function trackBackredirectCtaClick(location = "backredirect_primary_cta") {
-  trackInitiateCheckout(location, 5.99, "BUMBUM590", { page: "backredirect" });
+  trackInitiateCheckout(location, 5.90, "BUMBUM590", { page: "backredirect" });
   fbq("trackCustom", "BackredirectCtaClick", {
     click_location: location,
     product: "BrazilianBooty - Desafío 28 Días",
-    value: 5.99,
-    currency: "EUR",
+    value: 5.90,
+    currency: "USD",
   });
 }
 
@@ -386,23 +413,23 @@ export function trackBackredirectCtaClick(location = "backredirect_primary_cta")
 export function trackDownsellModalView() {
   fbq("trackCustom", "DownsellModalView", {
     offer: "BrazilianBooty Plan 28 Días Downsell",
-    price: 5.99,
-    currency: "EUR",
+    price: 5.90,
+    currency: "USD",
     timestamp: new Date().toISOString(),
   });
 }
 
 /**
- * Track CTA click on Downsell offer (5,99 €)
+ * Track CTA click on Downsell offer ($5.90)
  */
 export function trackDownsellCtaClick(location = "downsell_modal_cta") {
-  trackInitiateCheckout(location, 5.99, "BUMBUM590", { page: "downsell_modal" });
+  trackInitiateCheckout(location, 5.90, "BUMBUM590", { page: "downsell_modal" });
 
   fbq("trackCustom", "DownsellCtaClick", {
     click_location: location,
     product: "BrazilianBooty - Desafío 28 Días Downsell",
-    value: 5.99,
-    currency: "EUR",
+    value: 5.90,
+    currency: "USD",
   });
 }
 
@@ -465,8 +492,8 @@ export function trackPlanPageView(details: Record<string, unknown> = {}) {
   trackPageView("Plano 28 Días - BrazilianBooty");
   trackViewContent("Quiz Plan Offer Screen", {
     page_type: "full_offer_plan",
-    price: 9.99,
-    currency: "EUR",
+    price: 9.90,
+    currency: "USD",
     ...details,
   });
 }
@@ -487,7 +514,7 @@ export function trackPlanSelection(planType: "basic" | "vip", price: number) {
   fbq("trackCustom", "PlanSelected", {
     plan_type: planType,
     price: price,
-    currency: "EUR",
+    currency: "USD",
   });
 }
 
@@ -513,6 +540,6 @@ export function trackPlanCheckoutClick(
     plan_type: planType,
     price: price,
     location: location,
-    currency: "EUR",
+    currency: "USD",
   });
 }

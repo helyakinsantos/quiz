@@ -377,7 +377,7 @@ export default function VslSalesPage() {
                     <div className="rounded-2xl border border-[color:var(--wine)]/20 bg-[color:var(--cream)]/60 p-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <span className="text-xs font-bold text-[color:var(--ink-muted)] line-through">
-                          De 47,00 €
+                          De $47.00 USD
                         </span>
                         <span className="rounded-full bg-[color:var(--wine)] px-2 py-0.5 text-[10px] font-black text-white">
                           80% OFF
@@ -386,7 +386,7 @@ export default function VslSalesPage() {
                       <div className="mt-1 flex items-baseline justify-center gap-1">
                         <span className="text-sm font-bold text-[color:var(--wine)]">Solo</span>
                         <span className="font-display text-4xl font-black text-[color:var(--wine)]">
-                          9,99 €
+                          $9.90 USD
                         </span>
                       </div>
                       <span className="text-[10px] text-[color:var(--ink-muted)] font-medium">
@@ -443,7 +443,7 @@ export default function VslSalesPage() {
                     >
                       <span className="button-sheen" />
                       <span className="flex items-center justify-center gap-1.5">
-                        ELEGIR PLAN BÁSICO (9,99 €)
+                        ELEGIR PLAN BÁSICO ($9.90 USD)
                         <ArrowRight size={16} />
                       </span>
                     </a>
@@ -457,52 +457,38 @@ export default function VslSalesPage() {
                 <div
                   className={`lg:col-span-7 rounded-3xl border-4 transition-all flex flex-col justify-between p-6 sm:p-8 bg-white relative overflow-hidden ${
                     selectedPlan === "vip"
-                      ? "border-[color:var(--coral)] shadow-[10px_10px_0_var(--wine)] ring-4 ring-[color:var(--coral)]/30"
-                      : "border-[color:var(--wine)] shadow-[6px_6px_0_var(--wine)]"
+                      ? "border-[color:var(--coral)] shadow-2xl scale-[1.01] ring-4 ring-[color:var(--coral)]/20"
+                      : "border-black/10 hover:border-[color:var(--coral)]/40"
                   }`}
                 >
-                  {/* Badge de Melhor Escolha no Topo */}
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-[color:var(--coral)] to-[#e11d48] text-white text-[11px] font-black uppercase tracking-wider px-5 py-1.5 rounded-bl-2xl shadow-md flex items-center gap-1.5">
-                    <Crown size={14} fill="currentColor" />
-                    <span>MÁS ELEGIDO • 94% DE ALUMNAS</span>
+                  {/* Badge Exclusivo no Topo do VIP */}
+                  <div className="absolute top-0 right-0 bg-gradient-to-l from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)] text-white text-[11px] font-black uppercase tracking-widest px-6 py-1.5 rounded-bl-2xl shadow-md flex items-center gap-1.5">
+                    <Flame size={14} className="text-[color:var(--shock-yellow)] fill-current" />
+                    <span>MÁS ELEGIDO • 90% OFF</span>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="border-b border-black/10 pb-4">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--coral-soft)] px-2.5 py-0.5 text-[10px] font-black uppercase text-[color:var(--coral-dark)]">
-                        ⭐ PAQUETE COMPLETO DEFINITIVO
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="rounded-full bg-[color:var(--shock-yellow)] text-[color:var(--wine)] px-3 py-1 text-xs font-black uppercase tracking-wider shadow-sm">
+                        RECOMENDADO
                       </span>
-                      <h3 className="font-display text-2xl sm:text-3xl font-black text-[color:var(--wine)] mt-1">
-                        Plan VIP Vitalicio + 4 Bonos
-                      </h3>
-                      <p className="text-xs text-[color:var(--ink-muted)] leading-relaxed mt-1">
-                        Todo lo que necesitas para levantar, esculpir y mantener tus glúteos firmes
-                        para siempre, con acceso sin límite de tiempo y soporte.
-                      </p>
+                      <span className="text-xs font-extrabold text-[color:var(--coral)] uppercase tracking-wider">
+                        TRANSFORMACIÓN ACELERADA
+                      </span>
                     </div>
 
-                    {/* Product Mockup visual preview */}
-                    <div className="flex items-center gap-3 rounded-2xl border border-[color:var(--coral)]/30 bg-[color:var(--cream)]/60 p-3">
-                      <img
-                        src={desafioCard}
-                        alt="Desafío Glúteos Brasileños VIP"
-                        className="h-16 w-16 rounded-xl object-cover border-2 border-[color:var(--coral)] shadow-sm shrink-0"
-                      />
-                      <div className="text-left">
-                        <span className="inline-block rounded bg-[color:var(--wine)] px-2 py-0.5 text-[9px] font-black uppercase text-[color:var(--lime)]">
-                          ACCESO TOTAL VITALICIO
-                        </span>
-                        <p className="text-xs font-black text-[color:var(--wine)] mt-0.5">
-                          Desafío 28 Días + 4 Bonos + Protocolo Cintura Fina
-                        </p>
-                      </div>
-                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl font-black text-[color:var(--wine)]">
+                      Plan VIP Vitalicio + 4 Bonos
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[color:var(--ink-muted)] font-medium mt-1">
+                      El protocolo biomecánico definitivo con resultados 3X más rápidos y acceso ilimitado para siempre.
+                    </p>
 
                     {/* Preço VIP */}
                     <div className="rounded-2xl border-2 border-[color:var(--coral)] bg-gradient-to-br from-[color:var(--coral-soft)]/40 via-white to-[color:var(--cream)] p-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <span className="text-xs font-bold text-[color:var(--ink-muted)] line-through">
-                          Valor Real: 147,00 €
+                          Valor Real: $147.00 USD
                         </span>
                         <span className="rounded-full bg-[color:var(--coral)] px-2.5 py-0.5 text-[10px] font-black text-white shadow-sm">
                           90% DE DESCUENTO
@@ -513,7 +499,7 @@ export default function VslSalesPage() {
                           Pago único de solo
                         </span>
                         <span className="font-display text-4xl sm:text-5xl font-black text-[color:var(--coral)]">
-                          19,99 €
+                          $19.90 USD
                         </span>
                       </div>
                       <p className="text-[11px] font-extrabold text-emerald-800 mt-0.5">
@@ -590,7 +576,7 @@ export default function VslSalesPage() {
                     >
                       <span className="button-sheen" />
                       <span className="flex items-center justify-center gap-2">
-                        ¡SÍ! QUIERO EL PLAN VIP COMPLETO (19,99 €)
+                        ¡SÍ! QUIERO EL PLAN VIP COMPLETO ($19.90 USD)
                         <ArrowRight size={22} />
                       </span>
                     </a>
@@ -628,10 +614,10 @@ export default function VslSalesPage() {
                     <tr className="border-b-2 border-[color:var(--wine)]">
                       <th className="pb-3 font-bold text-[color:var(--ink-muted)]">Beneficio</th>
                       <th className="pb-3 font-bold text-[color:var(--wine)] text-center">
-                        Plan Básico (9,99 €)
+                        Plan Básico ($9.90 USD)
                       </th>
                       <th className="pb-3 font-black text-[color:var(--coral)] text-center bg-[color:var(--coral-soft)]/20 rounded-t-xl">
-                        ⭐ Plan VIP Vitalicio (19,99 €)
+                        ⭐ Plan VIP Vitalicio ($19.90 USD)
                       </th>
                     </tr>
                   </thead>
@@ -1264,14 +1250,14 @@ export default function VslSalesPage() {
                   className="cta-button inline-block text-center py-3.5 px-6 text-xs sm:text-sm font-black uppercase text-white shadow-md hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] to-[color:var(--wine)] cursor-pointer"
                 >
                   <span className="button-sheen" />
-                  <span>PROBAR EL PLAN VIP SIN RIESGO (19,99 €)</span>
+                  <span>PROBAR EL PLAN VIP SIN RIESGO ($19.90 USD)</span>
                 </a>
                 <a
                   href={getDecoratedCheckoutUrl(BASE_CHECKOUT_BASIC_URL)}
                   onClick={(e) => handleCheckout("basic", "sales_page_guarantee_basic_btn", e)}
                   className="rounded-2xl border-2 border-emerald-800 bg-white px-5 py-3 text-xs sm:text-sm font-black text-emerald-900 hover:bg-emerald-100 transition-colors text-center cursor-pointer"
                 >
-                  Probar el Plan Básico (9,99 €)
+                  Probar el Plan Básico ($9.90 USD)
                 </a>
               </div>
             </section>
@@ -1311,7 +1297,7 @@ export default function VslSalesPage() {
                 >
                   <span className="button-sheen" />
                   <span className="flex items-center justify-center gap-2">
-                    ¡QUIERO EL PLAN VIP COMPLETO POR 19,99 €!
+                    ¡QUIERO EL PLAN VIP COMPLETO POR $19.90 USD!
                     <ArrowRight size={20} />
                   </span>
                 </a>
@@ -1321,7 +1307,7 @@ export default function VslSalesPage() {
                   onClick={(e) => handleCheckout("basic", "sales_page_bottom_basic_cta", e)}
                   className="rounded-2xl border-2 border-[color:var(--wine)] bg-white py-3 text-xs sm:text-sm font-bold text-[color:var(--wine)] hover:bg-black/5 transition-colors text-center cursor-pointer"
                 >
-                  Prefiero el Plan Básico de 9,99 €
+                  Prefiero el Plan Básico de $9.90 USD
                 </a>
               </div>
 
@@ -1351,7 +1337,7 @@ export default function VslSalesPage() {
               <p className="text-xs sm:text-sm font-black">
                 Desafío Glúteos 28 Días —{" "}
                 <span className="text-[color:var(--shock-yellow)]">
-                  {selectedPlan === "vip" ? "19,99 € (VIP Vitalicio)" : "9,99 € (Básico)"}
+                  {selectedPlan === "vip" ? "$19.90 USD (VIP Vitalicio)" : "$9.90 USD (Básico)"}
                 </span>
               </p>
             </div>
@@ -1372,7 +1358,7 @@ export default function VslSalesPage() {
               >
                 <span className="button-sheen" />
                 <span className="flex items-center justify-center gap-1.5">
-                  ¡ACCEDER POR {selectedPlan === "vip" ? "19,99 €" : "9,99 €"}!
+                  ¡ACCEDER POR {selectedPlan === "vip" ? "$19.90 USD" : "$9.90 USD"}!
                   <ArrowRight size={16} />
                 </span>
               </a>

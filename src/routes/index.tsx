@@ -549,12 +549,12 @@ function getFallbackPreviousScreen(screen: Screen): Screen | null {
       return questions[12]; // Pergunta 13
     case "diagnostic":
       return questions[12]; // Pergunta 13
-    case "coupon":
-      return { kind: "diagnostic" };
     case "vsl":
-      return { kind: "coupon" };
-    case "final":
+      return { kind: "diagnostic" };
+    case "coupon":
       return { kind: "vsl" };
+    case "final":
+      return { kind: "coupon" };
     default:
       return null;
   }
@@ -808,19 +808,19 @@ export function Index() {
             answers={answers}
             biometrics={biometrics}
             onBack={back}
-            onNext={() => go({ kind: "coupon" })}
+            onNext={() => go({ kind: "vsl" })}
           />
-        )}
-        {screen.kind === "coupon" && (
-          <ScratchCouponScreen onBack={back} onContinue={() => go({ kind: "vsl" })} />
         )}
         {screen.kind === "vsl" && (
           <VslDedicatedScreen
             answers={answers}
             biometrics={biometrics}
             onBack={back}
-            onProceedToOffer={() => go({ kind: "final" })}
+            onProceedToOffer={() => go({ kind: "coupon" })}
           />
+        )}
+        {screen.kind === "coupon" && (
+          <ScratchCouponScreen onBack={back} onContinue={() => go({ kind: "final" })} />
         )}
         {screen.kind === "final" && (
           <FinalScreen answers={answers} biometrics={biometrics} />
@@ -2083,11 +2083,27 @@ function ScratchCouponScreen({
 }>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const shavingsCanvasRef = useRef<HTMLCanvasElement>(null);
   const drawingRef = useRef(false);
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const moveCountRef = useRef(0);
   const revealedRef = useRef(false);
   const startedScratchRef = useRef(false);
+  const animatingRef = useRef(false);
+
+  type ShavingParticle = {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    gravity: number;
+    size: number;
+    alpha: number;
+    color: string;
+    rot: number;
+    vrot: number;
+  };
+  const shavingsRef = useRef<ShavingParticle[]>([]);
 
   const [revealed, setRevealed] = useState(false);
   const [scratchPercent, setScratchPercent] = useState(0);
@@ -2121,48 +2137,154 @@ function ScratchCouponScreen({
     canvas.width = Math.round(width * pixelRatio);
     canvas.height = Math.round(height * pixelRatio);
 
+    const shavingsCanvas = shavingsCanvasRef.current;
+    if (shavingsCanvas) {
+      shavingsCanvas.width = Math.round(width * pixelRatio);
+      shavingsCanvas.height = Math.round(height * pixelRatio);
+    }
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     ctx.scale(pixelRatio, pixelRatio);
 
-    // Rich metallic gradient with gold and pink sparkles
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "#ff2fb3");
-    gradient.addColorStop(0.35, "#a855f7");
-    gradient.addColorStop(0.7, "#6366f1");
-    gradient.addColorStop(1, "#3b82f6");
-    ctx.fillStyle = gradient;
+    // 1. Textura Base: Película metalizada prateada de raspadinha de loteria
+    const silverGrad = ctx.createLinearGradient(0, 0, width, height);
+    silverGrad.addColorStop(0, "#9aa0a6");
+    silverGrad.addColorStop(0.18, "#dce1e7");
+    silverGrad.addColorStop(0.35, "#ffffff");
+    silverGrad.addColorStop(0.55, "#b0b8c2");
+    silverGrad.addColorStop(0.75, "#8a929e");
+    silverGrad.addColorStop(0.9, "#d2d8e0");
+    silverGrad.addColorStop(1, "#9aa0a6");
+    ctx.fillStyle = silverGrad;
     ctx.fillRect(0, 0, width, height);
 
-    // Diagonal texture pattern
-    ctx.globalAlpha = 0.14;
-    ctx.fillStyle = "#ffffff";
-    for (let x = -height; x < width + height; x += 28) {
-      ctx.save();
-      ctx.translate(x, 0);
-      ctx.rotate(Math.PI / 4);
-      ctx.fillRect(0, -height, 7, height * 3);
-      ctx.restore();
+    // 2. Micro-granulado fosco de látex raspável (ruído físico)
+    const noiseCanvas = document.createElement("canvas");
+    noiseCanvas.width = 48;
+    noiseCanvas.height = 48;
+    const nCtx = noiseCanvas.getContext("2d");
+    if (nCtx) {
+      const imgData = nCtx.createImageData(48, 48);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const val = (Math.random() - 0.5) * 50;
+        d[i] = 175 + val;
+        d[i + 1] = 180 + val;
+        d[i + 2] = 190 + val;
+        d[i + 3] = 45; // opacidade do ruído
+      }
+      nCtx.putImageData(imgData, 0, 0);
+      const pattern = ctx.createPattern(noiseCanvas, "repeat");
+      if (pattern) {
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, 0, width, height);
+      }
     }
-    ctx.globalAlpha = 1;
 
-    // Center badge background on canvas
-    ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
+    // 3. Moldura e linhas de segurança tipo bilhete oficial
+    ctx.strokeStyle = "rgba(43, 11, 46, 0.16)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 6]);
+    ctx.strokeRect(10, 10, width - 20, height - 20);
+    ctx.setLineDash([]);
+
+    // 4. Selo central metalizado em baixo-relevo
+    const badgeW = Math.min(270, width - 40);
+    const badgeH = 74;
+    const badgeX = (width - badgeW) / 2;
+    const badgeY = (height - badgeH) / 2;
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.beginPath();
-    ctx.roundRect(width / 2 - 120, height / 2 - 38, 240, 76, 16);
+    ctx.roundRect(badgeX - 1, badgeY - 1, badgeW + 2, badgeH + 2, 14);
     ctx.fill();
 
-    // Text on scratch surface
+    ctx.fillStyle = "rgba(43, 11, 46, 0.1)";
+    ctx.beginPath();
+    ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 12);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 5. Textos na película de raspagem
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "#ffffff";
-    ctx.font = `900 ${Math.min(17, width / 20)}px DM Sans, sans-serif`;
-    ctx.fillText("✨ RASPA AQUÍ CON EL DEDO", width / 2, height / 2 - 9);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
-    ctx.font = `700 ${Math.min(11, width / 31)}px DM Sans, sans-serif`;
-    ctx.fillText("TU CUPÓN ESTÁ ESCONDIDO DEBAJO", width / 2, height / 2 + 15);
+    ctx.fillStyle = "#1e0821";
+    ctx.font = `900 ${Math.min(15, width / 23)}px DM Sans, sans-serif`;
+    ctx.fillText("🪙 RASPA CON EL DEDO O RATÓN", width / 2, height / 2 - 10);
+
+    ctx.fillStyle = "#63172e";
+    ctx.font = `800 ${Math.min(10.5, width / 33)}px DM Sans, sans-serif`;
+    ctx.fillText("★ CUPÓN EXCLUSIVO DE 90% OFF DEBAJO ★", width / 2, height / 2 + 13);
+  };
+
+  // Motor de física dos farelos e partículas de tinta caindo
+  const tickShavings = () => {
+    const sCanvas = shavingsCanvasRef.current;
+    if (!sCanvas) return;
+    const ctx = sCanvas.getContext("2d");
+    if (!ctx) return;
+
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2.5);
+    ctx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+
+    const particles = shavingsRef.current;
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.rot += p.vrot;
+      p.alpha -= 0.035;
+
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.scale(pixelRatio, pixelRatio);
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.3);
+      ctx.restore();
+    }
+
+    if (particles.length > 0) {
+      requestAnimationFrame(tickShavings);
+    } else {
+      animatingRef.current = false;
+    }
+  };
+
+  const spawnShavings = (x: number, y: number) => {
+    const count = 3 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < count; i++) {
+      shavingsRef.current.push({
+        x: x + (Math.random() - 0.5) * 14,
+        y: y + (Math.random() - 0.5) * 14,
+        vx: (Math.random() - 0.5) * 3.5,
+        vy: -(Math.random() * 2.5 + 0.6),
+        gravity: 0.32,
+        size: Math.random() * 3 + 1.5,
+        alpha: 1,
+        color: ["#ffffff", "#d4d9e0", "#a2abb7", "#76808e", "#e8edf3"][Math.floor(Math.random() * 5)],
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.3,
+      });
+    }
+
+    if (!animatingRef.current) {
+      animatingRef.current = true;
+      requestAnimationFrame(tickShavings);
+    }
   };
 
   useEffect(() => {
@@ -2228,6 +2350,7 @@ function ScratchCouponScreen({
 
     const previous = lastPointRef.current ?? point;
 
+    // Linha principal de apagamento
     ctx.beginPath();
     ctx.moveTo(previous.x, previous.y);
     ctx.lineTo(point.x, point.y);
@@ -2237,13 +2360,26 @@ function ScratchCouponScreen({
     ctx.arc(point.x, point.y, ctx.lineWidth / 2, 0, Math.PI * 2);
     ctx.fill();
 
+    // Micro-fricções irregulares na borda imitando o bordo áspero de uma moeda
+    for (let i = 0; i < 3; i++) {
+      const jx = point.x + (Math.random() - 0.5) * (ctx.lineWidth * 0.7);
+      const jy = point.y + (Math.random() - 0.5) * (ctx.lineWidth * 0.7);
+      const jr = (ctx.lineWidth / 3.5) * (0.5 + Math.random() * 0.6);
+      ctx.beginPath();
+      ctx.arc(jx, jy, jr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Dispara partículas de tinta soltando
+    spawnShavings(point.x, point.y);
+
     lastPointRef.current = point;
     moveCountRef.current += 1;
 
     if (moveCountRef.current % Math.max(2, Math.round(5 / pixelRatio)) === 0) {
       checkRevealProgress();
       if (moveCountRef.current % 12 === 0) {
-        triggerVibration(10);
+        triggerVibration(12);
       }
     }
   };
@@ -2254,7 +2390,7 @@ function ScratchCouponScreen({
       startedScratchRef.current = true;
       setHasInteracted(true);
       trackCouponScratchStart();
-      triggerVibration(20);
+      triggerVibration(25);
     }
     drawingRef.current = true;
     lastPointRef.current = null;
@@ -2289,7 +2425,7 @@ function ScratchCouponScreen({
           <Gift size={32} />
         </span>
         <p className="mt-4 text-[10px] font-black uppercase tracking-[0.22em] text-[color:var(--coral)]">
-          Fase 1 completada con éxito
+          Fase Final · Recompensa Desbloqueada
         </p>
         <h1 className="mt-1 font-display text-3xl font-black leading-[0.96] tracking-[-0.05em] text-[color:var(--wine)] sm:text-5xl">
           ¡Tienes un premio reservado!
@@ -2303,7 +2439,7 @@ function ScratchCouponScreen({
         ref={containerRef}
         className={`scratch-wrap mt-4 ${revealed ? "is-revealed" : ""}`}
       >
-        {/* Hidden reward card under scratch mask */}
+        {/* Cartão de recompensa secreto sob a película */}
         <div className="coupon-reveal" aria-live="polite">
           <span className="coupon-ticket-icon">
             <TicketPercent size={28} />
@@ -2319,7 +2455,7 @@ function ScratchCouponScreen({
           </span>
         </div>
 
-        {/* Scratchable Mask Canvas */}
+        {/* Película Metalizada Realista (Canvas de Raspagem) */}
         <canvas
           ref={canvasRef}
           className="scratch-canvas"
@@ -2331,7 +2467,14 @@ function ScratchCouponScreen({
           onPointerLeave={handlePointerUp}
         />
 
-        {/* Hand/Finger Scratch hint icon before first touch */}
+        {/* Camada de partículas de farelos de tinta caindo */}
+        <canvas
+          ref={shavingsCanvasRef}
+          className="pointer-events-none absolute inset-0 z-20 h-full w-full rounded-3xl"
+          aria-hidden="true"
+        />
+
+        {/* Dica visual com animação pulsante antes do primeiro toque */}
         {!hasInteracted && !revealed && (
           <div className="scratch-hint-overlay">
             <div className="scratch-hint-pulse">
@@ -2341,7 +2484,7 @@ function ScratchCouponScreen({
           </div>
         )}
 
-        {/* Confetti Explosion on Reveal */}
+        {/* Confetes dourados na revelação */}
         {revealed && (
           <div className="coupon-confetti" aria-hidden="true">
             {Array.from({ length: 24 }).map((_, index) => (
@@ -2357,7 +2500,7 @@ function ScratchCouponScreen({
         )}
       </div>
 
-      {/* Progress Bar under Scratch */}
+      {/* Barra de Progresso Realista */}
       {!revealed && (
         <div className="mx-auto max-w-sm px-2">
           <div className="flex items-center justify-between text-[11px] font-bold text-[color:var(--ink-muted)] mb-1">
@@ -2373,28 +2516,28 @@ function ScratchCouponScreen({
         </div>
       )}
 
-      {/* Fallback button or Success alert */}
+      {/* Botão de fallback ou alerta de sucesso */}
       {!revealed ? (
         <button
           type="button"
           data-sound="none"
-          className="coupon-fallback"
+          className="coupon-fallback cursor-pointer"
           onClick={revealCoupon}
         >
           ¿Prefieres no raspar? Haz clic para revelar cupón
         </button>
       ) : (
         <output className="coupon-success mx-auto max-w-md">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
             <Check size={16} strokeWidth={3} />
           </span>
           <p className="text-xs sm:text-sm">
-            <strong>¡90% OFF Desbloqueado!</strong> Tu descuento ya fue asignado para ver la presentación oficial en video.
+            <strong>¡90% OFF Desbloqueado!</strong> Tu descuento de $9.90 USD ya fue asignado para tu Plan Personalizado.
           </p>
         </output>
       )}
 
-      {/* Main CTA Button */}
+      {/* Botão Principal de Ação que direciona para a oferta do plano */}
       <div className="pt-2">
         <button
           type="button"
@@ -2403,11 +2546,11 @@ function ScratchCouponScreen({
             onContinue();
           }}
           disabled={!revealed}
-          className={`cta-button group ${revealed ? "coupon-cta-ready" : "opacity-60 cursor-not-allowed"}`}
+          className={`cta-button group ${revealed ? "coupon-cta-ready cursor-pointer" : "opacity-60 cursor-not-allowed"}`}
         >
           <span className="button-sheen" />
           <span className="flex items-center justify-center gap-2 text-sm sm:text-base font-black">
-            {revealed ? "APLICAR 90% OFF Y VER VIDEO OFICIAL" : "RASPA PARA LIBERAR TU DESCUENTO"}
+            {revealed ? "APLICAR 90% OFF Y VER MI PLAN ($9.90 USD)" : "RASPA PARA LIBERAR TU DESCUENTO"}
             {revealed ? <ChevronRight size={20} /> : <LockKeyhole size={18} />}
           </span>
         </button>
@@ -2514,25 +2657,25 @@ function VslDedicatedScreen({
         ) : (
           <div className="vsl-pitch-box rounded-3xl border-4 border-[color:var(--coral)] bg-white p-6 md:p-8 text-center shadow-2xl space-y-4">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--wine)] px-3.5 py-1 text-xs font-black uppercase text-[color:var(--lime)] shadow-md animate-bounce">
-              <Flame size={15} /> ¡ACCESO AL PLAN DESBLOQUEADO!
+              <Gift size={15} /> ¡CUPÓN EXCLUSIVO DESBLOQUEADO!
             </span>
 
             <h2 className="font-display text-2xl sm:text-3xl font-black text-[color:var(--wine)]">
-              Tu Transformación de 28 Días Está Lista
+              Tu Descuento de 90% Está Esperándote
             </h2>
 
             <p className="text-xs sm:text-sm font-medium text-[color:var(--ink-muted)]">
-              Ruta adaptada a tu meta de <strong>{goal.toLowerCase()}</strong> en <strong>{time} al día</strong> con 90% de descuento aplicado ($9.90 USD).
+              Ruta adaptada a tu meta de <strong>{goal.toLowerCase()}</strong> en <strong>{time} al día</strong>. Raspa tu tarjeta en el siguiente paso para aplicar tu cupón de $9.90 USD.
             </p>
 
             <button
               type="button"
               onClick={onProceedToOffer}
-              className="cta-button w-full py-4 text-base sm:text-lg font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)]"
+              className="cta-button w-full py-4 text-base sm:text-lg font-black tracking-wider text-white shadow-xl hover:scale-[1.02] bg-gradient-to-r from-[color:var(--coral)] via-[#e11d48] to-[color:var(--wine)] cursor-pointer"
             >
               <span className="button-sheen" />
               <span className="flex items-center justify-center gap-2">
-                VER MI PLAN COMPLETO Y BONOS (90% OFF)
+                RASCAR MI CUPÓN EXCLUSIVO (90% OFF)
                 <ArrowRight size={22} />
               </span>
             </button>
